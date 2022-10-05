@@ -49,65 +49,65 @@ class FuzzyCalculator(object):
         self.consequent_variable = consequent_variable
 
     def calculate(self, antecedent_value):
-        value_is_low = self.__get_possibility(antecedent_value, self.antecedent_variable.low_values,
-                                              self.antecedent_variable.low_possibilities)
-        value_is_middle = self.__get_possibility(antecedent_value, self.antecedent_variable.middle_values,
-                                                 self.antecedent_variable.middle_possibilities)
-        value_is_high = self.__get_possibility(antecedent_value, self.antecedent_variable.high_values,
-                                               self.antecedent_variable.high_possibilities)
-        self.consequent_variable.low_possibilities *= value_is_low
-        self.consequent_variable.middle_possibilities *= value_is_middle
-        self.consequent_variable.high_possibilities *= value_is_high
-        if value_is_low == 1:
-            scale = len(self.consequent_variable.low_values) / len(self.antecedent_variable.low_values)
-            index = np.where(antecedent_value == self.antecedent_variable.low_values)[0][0]
-            return self.consequent_variable.low_values[math.ceil(index * scale)]
-        if value_is_middle == 1:
-            scale = len(self.consequent_variable.middle_values) / len(self.antecedent_variable.middle_values)
-            index = np.where(antecedent_value == self.antecedent_variable.middle_values)[0][0]
-            return self.consequent_variable.middle_values[math.ceil(index * scale)]
-        if value_is_high == 1:
-            scale = len(self.consequent_variable.high_values) / len(self.antecedent_variable.high_values)
-            index = np.where(antecedent_value == self.antecedent_variable.high_values)[0][0]
-            return self.consequent_variable.high_values[math.ceil(index * scale)]
-        if value_is_low == 0:
-            index = self.__get_lines_intersection_for_right_side()
-            analyzed_elements_length = len(self.consequent_variable.middle_values)
-            points = [
-                [self.consequent_variable.middle_values[0], 0],
-                [self.consequent_variable.middle_values[int(analyzed_elements_length / 2)],
-                 self.consequent_variable.middle_possibilities[int(analyzed_elements_length / 2)]],
-                [self.consequent_variable.middle_values[index], self.consequent_variable.middle_possibilities[index]],
-                [self.consequent_variable.high_values[int(analyzed_elements_length / 2)],
-                 self.consequent_variable.high_possibilities[int(analyzed_elements_length / 2)]],
-                [self.consequent_variable.high_values[len(self.consequent_variable.high_values) - 1],
-                 self.consequent_variable.high_possibilities[len(self.consequent_variable.high_possibilities) - 1]],
-                [1000, 0]
-            ]
-            self.__plot_decision_graph(points)
-            polygon = Polygon(points)
-            return round(list(polygon.centroid.coords)[0][0], 2)
-        if value_is_high == 0:
-            index = self.__get_lines_intersection_for_left_side()
-            low_elements_length = len(self.consequent_variable.low_values)
-            middle_elements_length = len(self.consequent_variable.middle_values)
-            points = [
-                [0, 0],
-                [0, self.consequent_variable.low_possibilities[0]],
-                [self.consequent_variable.low_values[int(low_elements_length / 2)],
-                 self.consequent_variable.low_possibilities[int(low_elements_length / 2)]],
-                [self.consequent_variable.low_values[index], self.consequent_variable.low_possibilities[index]],
-                [self.consequent_variable.middle_values[int(middle_elements_length / 2)],
-                 self.consequent_variable.middle_possibilities[int(middle_elements_length / 2)]],
-                [self.consequent_variable.middle_values[middle_elements_length - 1],
-                 self.consequent_variable.middle_possibilities[middle_elements_length - 1]]
-            ]
-            self.__plot_decision_graph(points)
-            polygon = Polygon(points)
-            return round(list(polygon.centroid.coords)[0][0], 2)
-        print("low chance:", value_is_low)
-        print("mid chance:", value_is_middle)
-        print("high chance:", value_is_high)
+        try:
+            value_is_low = self.__get_possibility(antecedent_value, self.antecedent_variable.low_values,
+                                                  self.antecedent_variable.low_possibilities)
+            value_is_middle = self.__get_possibility(antecedent_value, self.antecedent_variable.middle_values,
+                                                     self.antecedent_variable.middle_possibilities)
+            value_is_high = self.__get_possibility(antecedent_value, self.antecedent_variable.high_values,
+                                                   self.antecedent_variable.high_possibilities)
+            self.consequent_variable.low_possibilities *= value_is_low
+            self.consequent_variable.middle_possibilities *= value_is_middle
+            self.consequent_variable.high_possibilities *= value_is_high
+            if value_is_low == 1:
+                scale = len(self.consequent_variable.low_values) / len(self.antecedent_variable.low_values)
+                index = np.where(np.isclose(self.antecedent_variable.low_values, antecedent_value))[0][0]
+                return round(self.consequent_variable.low_values[math.ceil(index * scale)], 2)
+            if value_is_middle == 1:
+                scale = len(self.consequent_variable.middle_values) / len(self.antecedent_variable.middle_values)
+                index = np.where(np.isclose(self.antecedent_variable.middle_values, antecedent_value))[0][0]
+                return round(self.consequent_variable.middle_values[math.ceil(index * scale)], 2)
+            if value_is_high == 1:
+                scale = len(self.consequent_variable.high_values) / len(self.antecedent_variable.high_values)
+                index = np.where(np.isclose(self.antecedent_variable.high_values, antecedent_value))[0][0]
+                return round(self.consequent_variable.high_values[math.ceil(index * scale)], 2)
+            if value_is_low == 0:
+                index = self.__get_lines_intersection_for_right_side()
+                analyzed_elements_length = len(self.consequent_variable.middle_values)
+                points = [
+                    [self.consequent_variable.middle_values[0], 0],
+                    [self.consequent_variable.middle_values[int(analyzed_elements_length / 2)],
+                     self.consequent_variable.middle_possibilities[int(analyzed_elements_length / 2)]],
+                    [self.consequent_variable.middle_values[index], self.consequent_variable.middle_possibilities[index]],
+                    [self.consequent_variable.high_values[int(analyzed_elements_length / 2)],
+                     self.consequent_variable.high_possibilities[int(analyzed_elements_length / 2)]],
+                    [self.consequent_variable.high_values[len(self.consequent_variable.high_values) - 1],
+                     self.consequent_variable.high_possibilities[len(self.consequent_variable.high_possibilities) - 1]],
+                    [1000, 0]
+                ]
+                self.__plot_decision_graph(points)
+                polygon = Polygon(points)
+                return round(list(polygon.centroid.coords)[0][0], 2)
+            if value_is_high == 0:
+                index = self.__get_lines_intersection_for_left_side()
+                low_elements_length = len(self.consequent_variable.low_values)
+                middle_elements_length = len(self.consequent_variable.middle_values)
+                points = [
+                    [0, 0],
+                    [0, self.consequent_variable.low_possibilities[0]],
+                    [self.consequent_variable.low_values[int(low_elements_length / 2)],
+                     self.consequent_variable.low_possibilities[int(low_elements_length / 2)]],
+                    [self.consequent_variable.low_values[index], self.consequent_variable.low_possibilities[index]],
+                    [self.consequent_variable.middle_values[int(middle_elements_length / 2)],
+                     self.consequent_variable.middle_possibilities[int(middle_elements_length / 2)]],
+                    [self.consequent_variable.middle_values[middle_elements_length - 1],
+                     self.consequent_variable.middle_possibilities[middle_elements_length - 1]]
+                ]
+                self.__plot_decision_graph(points)
+                polygon = Polygon(points)
+                return round(list(polygon.centroid.coords)[0][0], 2)
+        except:
+            print('Невозможно подсчитать, так как заданная температура лежит вне допустимого диапазона 0-60 С˚')
 
     def __get_possibility(self, value, values, possibilities):
         result_indexes = np.where(np.isclose(values, value))[0]
@@ -121,6 +121,8 @@ class FuzzyCalculator(object):
 
     def plot_output_graph(self, input_data, output_data):
         plt.plot(input_data, output_data)
+        for i in range(len(input_data)):
+            plt.plot(input_data[i], output_data[i], 'ro')
         plt.grid()
 
     def __get_lines_intersection_for_right_side(self):
