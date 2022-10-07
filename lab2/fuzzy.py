@@ -117,6 +117,7 @@ class FuzzyCalculator(object):
         self.consequent_variable.plot_all_graphs()
         for point in points:
             plt.plot(point[0], point[1], 'ro')
+        plt.grid()    
         plt.show()
 
     def plot_output_graph(self, input_data, output_data):
