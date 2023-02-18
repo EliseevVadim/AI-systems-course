@@ -18,8 +18,8 @@ class TrafficStrategyCreator:
         if not len(bays_volumes) == len(bays_mass_capacities):
             raise ValueError("Параметры должны иметь одинаковую длину")
         self.constraints_values = np.empty([0, 0])
-        self.constraints_values = np.append(self.constraints_values, bays_volumes)
         self.constraints_values = np.append(self.constraints_values, bays_mass_capacities)
+        self.constraints_values = np.append(self.constraints_values, bays_volumes)
         self.bays_count = len(bays_volumes)
 
     def add_goods_info(self, amounts_of_goods, goods_prices, goods_masses, goods_volumes):
